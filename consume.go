@@ -43,7 +43,7 @@ type Delivery struct {
 }
 
 // NewConsumer returns a new Consumer connected to the given rabbitmq server
-func NewConsumer(url string, config Config, optionFuncs ...func(*ConsumerOptions)) (Consumer, error) {
+func NewConsumer(url []string, config Config, optionFuncs ...func(*ConsumerOptions)) (Consumer, error) {
 	options := &ConsumerOptions{
 		Logger:            &stdDebugLogger{},
 		ReconnectInterval: time.Second * 5,

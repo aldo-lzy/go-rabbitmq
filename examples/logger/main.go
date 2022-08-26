@@ -31,9 +31,10 @@ func (l errorLogger) Tracef(format string, v ...interface{}) {}
 
 func main() {
 	mylogger := &errorLogger{}
+	url := []string{"amqp://guest:guest@localhost"}
 
 	publisher, err := rabbitmq.NewPublisher(
-		"amqp://guest:guest@localhost", rabbitmq.Config{},
+		url, rabbitmq.Config{},
 		rabbitmq.WithPublisherOptionsLogger(mylogger),
 	)
 	if err != nil {

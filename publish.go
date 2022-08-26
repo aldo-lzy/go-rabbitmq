@@ -87,7 +87,7 @@ func WithPublisherOptionsLogger(log Logger) func(options *PublisherOptions) {
 // on the channel of Returns that you should setup a listener on.
 // Flow controls are automatically handled as they are sent from the server, and publishing
 // will fail with an error when the server is requesting a slowdown
-func NewPublisher(url string, config Config, optionFuncs ...func(*PublisherOptions)) (*Publisher, error) {
+func NewPublisher(url []string, config Config, optionFuncs ...func(*PublisherOptions)) (*Publisher, error) {
 	options := &PublisherOptions{
 		Logger:            &stdDebugLogger{},
 		ReconnectInterval: time.Second * 5,

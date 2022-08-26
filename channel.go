@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"errors"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 
 type channelManager struct {
 	logger              Logger
-	url                 string
+	url                 []string
 	channel             *amqp.Channel
 	connection          *amqp.Connection
 	amqpConfig          Config
@@ -20,11 +21,22 @@ type channelManager struct {
 	reconnectionCount   uint
 }
 
-func newChannelManager(url string, conf Config, log Logger, reconnectInterval time.Duration) (*channelManager, error) {
-	conn, ch, err := getNewChannel(url, conf)
+func getRandUrl(url []string) string {
+	if len(url) == 0 {
+		return ""
+	}
+
+	i := rand.Intn(len(url))
+	return url[i]
+}
+
+func newChannelManager(url []string, conf Config, log Logger, reconnectInterval time.Duration) (*channelManager, error) {
+	randUrl := getRandUrl(url)
+	conn, ch, err := getNewChannel(randUrl, conf)
 	if err != nil {
 		return nil, err
 	}
+	log.Infof("first connect to amqp server(%s) ok", randUrl)
 
 	chManager := channelManager{
 		logger:              log,
@@ -98,10 +110,13 @@ func (chManager *channelManager) reconnectLoop() {
 func (chManager *channelManager) reconnect() error {
 	chManager.channelMux.Lock()
 	defer chManager.channelMux.Unlock()
-	newConn, newChannel, err := getNewChannel(chManager.url, chManager.amqpConfig)
+	randUrl := getRandUrl(chManager.url)
+	newConn, newChannel, err := getNewChannel(randUrl, chManager.amqpConfig)
 	if err != nil {
+		chManager.logger.Errorf("reconnect to amqp server(%s) failed", randUrl)
 		return err
 	}
+	chManager.logger.Infof("reconnect to amqp server(%s) ok", randUrl)
 
 	chManager.channel.Close()
 	chManager.connection.Close()

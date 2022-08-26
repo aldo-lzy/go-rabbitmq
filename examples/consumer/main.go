@@ -13,8 +13,9 @@ import (
 var consumerName = "example"
 
 func main() {
+	url := []string{"amqp://guest:guest@localhost"}
 	consumer, err := rabbitmq.NewConsumer(
-		"amqp://guest:guest@localhost", rabbitmq.Config{},
+		url, rabbitmq.Config{},
 		rabbitmq.WithConsumerOptionsLogging,
 	)
 	if err != nil {
