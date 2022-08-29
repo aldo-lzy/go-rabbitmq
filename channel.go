@@ -25,7 +25,7 @@ func getRandUrl(url []string) string {
 	if len(url) == 0 {
 		return ""
 	}
-
+	rand.Seed(time.Now().UnixNano())
 	i := rand.Intn(len(url))
 	return url[i]
 }
